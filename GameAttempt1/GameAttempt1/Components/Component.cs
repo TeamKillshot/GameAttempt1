@@ -12,7 +12,6 @@ namespace GameAttempt1.Components
         public delegate void ObjectIDHandler(string ID);
         public string ID { get; set; }
         public bool Enabled { get; set; }
-        public Vec2 Position { get; set; }
 
 
         //public GameObject Owner { get; set; }

@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
+using FarseerPhysics.Dynamics;
+using FarseerPhysics.Factories;
 
 namespace Components
 {
@@ -14,18 +16,16 @@ namespace Components
         #region Properties and Variables
 
         public PlayerIndex index;
-        public Rectangle previousPosition;
-        public Rectangle currentPosition;
-
+        public Vector2 Position;
         public Texture2D Sprite { get; set; }
-
-        int playerNumber = 0;
-
         public string Name { get; set; }
+        public Body Body { get; set; }
+        float gravity = 9.8f;
+        World world;
 
         public List<Player> playerList = new List<Player>();
 
-        Player player;
+        public bool IsConnected = false;
 
         private int speed = 15;
         #endregion
@@ -38,9 +38,16 @@ namespace Components
         }
 
         public void GetPlayerPosition(Player player)
-        {            
-            player.currentPosition = new Rectangle(125, 125, 300, 300);
-            player.previousPosition = player.currentPosition;
+        {
+            player.world = new World(new Vector2(0, gravity));
+
+            player.Position = new Vector2(200, 200);
+            player.Body = BodyFactory.CreateCircle(world, 1, 1);
+            player.Body.Restitution = 1f;
+            player.Body.BodyType = BodyType.Dynamic;
+
+            player.Position.X = Body.Position.X;
+            player.Position.Y = Body.Position.Y;
         }
 
         public void GetPlayerIndex(Player player)
@@ -55,54 +62,74 @@ namespace Components
             if (player.Name == "Player1" && state.IsConnected)
             {
                 player.index = PlayerIndex.One;
+                player.IsConnected = true;
             }
             else if(player.Name == "Player2" && state2.IsConnected)
             {
                 player.index = PlayerIndex.Two;
+                player.IsConnected = true;
             }
             else if(player.Name == "Players3" && !state.IsConnected)
             {
                 player.index = PlayerIndex.Three;
+                player.IsConnected = true;
             }
             else if (player.Name == "Player4" && !state.IsConnected)
             {
                 player.index = PlayerIndex.Four;
+                player.IsConnected = true;
             }
         }
 
-        public void Update(GameTime gameTime, Player player)
+        public unsafe void Update(GameTime gameTime, List<Player> playerList)
         {
             #region Player1 Controller
-                if (player != null)
+            foreach(Player player in playerList)
+            {
+                if (player != null && player.IsConnected == true)
                 {
-                    if (InputManager.IsButtonPressed(Buttons.DPadRight, player.index))
+                    player.world.Step(1f);
+
+                    player.Position.X = player.Body.Position.X;
+                    player.Position.Y = player.Body.Position.Y;
+
+                    GamePadState state = GamePad.GetState(player.index);
+
+                    //var X = Math.Abs(state.ThumbSticks.Left.X);
+                    //var Y = Math.Abs(state.ThumbSticks.Left.Y);
+
+                    if (InputManager.IsButtonHeld(Buttons.DPadRight))
                     {
-                        player.currentPosition.X += speed;
+                        player.Position.X += speed;
                     }
-                    if (InputManager.IsButtonPressed(Buttons.DPadLeft, player.index))
+                    if (InputManager.IsButtonHeld(Buttons.DPadLeft))
                     {
-                        player.currentPosition.X -= speed;
+                        player.Position.X -= speed;
                     }
-                    if (InputManager.IsButtonPressed(Buttons.DPadDown, player.index))
-                    {
-                        player.currentPosition.Y += speed;
-                    }
-                    if (InputManager.IsButtonPressed(Buttons.DPadUp, player.index))
-                    {
-                        player.currentPosition.Y -= speed;
-                    }
-                }           
-                #endregion
+                    //if (InputManager.IsButtonPressed(Buttons.DPadDown))
+                    //{
+                    //    player.Position.Y += speed;
+                    //}
+                    //if (InputManager.IsButtonPressed(Buttons.DPadUp))
+                    //{
+                    //    player.Position.Y -= speed;
+                    //}
+                }
+            }
+            
+            #endregion
         }
 
-        public void Draw(GameTime gameTime, SpriteFont font, SpriteBatch spritebatch, Player player)
+        public void Draw(GameTime gameTime, SpriteBatch spritebatch, List<Player> playerList)
         {
             spritebatch.Begin();
-            //spritebatch.DrawString(font, "Player" + player.index.ToString(), currentPosition, Color.Red);
-            if (player.Sprite != null)
+            foreach(Player player in playerList)
             {
-                spritebatch.Draw(player.Sprite, player.currentPosition, Color.White);
-            }
+                if (player.Sprite != null && player.IsConnected == true)
+                {
+                    spritebatch.Draw(player.Sprite, player.Position, Color.White);
+                }
+            }          
             spritebatch.End();
         }
     }
