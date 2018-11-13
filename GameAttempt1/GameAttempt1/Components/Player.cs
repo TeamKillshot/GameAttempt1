@@ -20,6 +20,7 @@ namespace Components
         public Texture2D Sprite { get; set; }
         public string Name { get; set; }
         public Body Body { get; set; }
+        Matrix Matrix { get; set; }
         float gravity = 9.8f;
         World world;
 
@@ -88,32 +89,23 @@ namespace Components
             {
                 if (player != null && player.IsConnected == true)
                 {
-                    player.world.Step(1f);
+                    player.world.Step(5f);
 
                     player.Position.X = player.Body.Position.X;
                     player.Position.Y = player.Body.Position.Y;
 
-                    GamePadState state = GamePad.GetState(player.index);
+                    //GamePadState state = GamePad.GetState(player.index);
+                    //player.Position.X *= state.ThumbSticks.Left.X;
+                    //player.Position.Y -= state.ThumbSticks.Left.Y;
 
-                    //var X = Math.Abs(state.ThumbSticks.Left.X);
-                    //var Y = Math.Abs(state.ThumbSticks.Left.Y);
-
-                    if (InputManager.IsButtonHeld(Buttons.DPadRight))
+                    if (InputManager.IsButtonPressed(Buttons.DPadRight))
                     {
                         player.Position.X += speed;
                     }
-                    if (InputManager.IsButtonHeld(Buttons.DPadLeft))
+                    if (InputManager.IsButtonPressed(Buttons.DPadLeft))
                     {
                         player.Position.X -= speed;
                     }
-                    //if (InputManager.IsButtonPressed(Buttons.DPadDown))
-                    //{
-                    //    player.Position.Y += speed;
-                    //}
-                    //if (InputManager.IsButtonPressed(Buttons.DPadUp))
-                    //{
-                    //    player.Position.Y -= speed;
-                    //}
                 }
             }
             

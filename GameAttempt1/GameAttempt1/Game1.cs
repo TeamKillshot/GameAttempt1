@@ -81,6 +81,9 @@ namespace GameAttempt1
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            //player.Position.X = player.Body.Position.X;
+            //player.Position.Y = player.Body.Position.Y;
+
             player.Update(gameTime, playersList);
 
             base.Update(gameTime);
