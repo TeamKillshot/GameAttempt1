@@ -62,34 +62,17 @@ namespace Components
             base.Update(gametime);
         }
 
-        public static bool IsButtonPressed(Buttons buttonToCheck, PlayerIndex _current)
+        public static bool IsButtonPressed(Buttons buttonToCheck)
         {
-            if(_current == PlayerIndex.One)
-            { 
-                if (currentPadState.IsButtonDown(buttonToCheck))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else if(_current == PlayerIndex.Two)
+            if (currentPadState.IsButtonDown(buttonToCheck))
             {
-                if(currentP2PadState.IsButtonDown(buttonToCheck))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return true;
             }
             else
             {
                 return false;
             }
+            
         }
 
         public static bool IsButtonHeld(Buttons buttonToCheck)
